@@ -154,3 +154,29 @@ resource "aws_lambda_permission" "subir_foto" {
 
   source_arn = "${aws_api_gateway_rest_api.terrafleet.execution_arn}/dev/POST/equipos/*/foto"
 }
+
+resource "aws_api_gateway_method" "crear_reserva" {
+  rest_api_id   = aws_api_gateway_rest_api.terrafleet.id
+  resource_id   = aws_api_gateway_resource.reservas.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "crear_reserva" {
+  rest_api_id = aws_api_gateway_rest_api.terrafleet.id
+  resource_id = aws_api_gateway_resource.reservas.id
+  http_method = aws_api_gateway_method.crear_reserva.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.crear_reserva.invoke_arn
+}
+
+resource "aws_lambda_permission" "crear_reserva" {
+  statement_id  = "AllowAPIGatewayCrearReserva"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.crear_reserva.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.terrafleet.execution_arn}/dev/POST/reservas"
+}
