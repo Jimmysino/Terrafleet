@@ -1,0 +1,16 @@
+#directorios locales de terraform
+**/.terraform/
+
+# Configuración local del backend
+backend.hcl
+
+# Paquete generado para las Lambdas
+terraform/lambda.zip
+
+# Archivos de estado y sus respaldos
+*.tfstate
+*.tfstate.*
+
+# Planes de ejecución
+*.tfplan
+tfplan
