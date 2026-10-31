@@ -124,3 +124,33 @@ resource "aws_lambda_permission" "publicar_equipo" {
 
   source_arn = "${aws_api_gateway_rest_api.terrafleet.execution_arn}/dev/POST/equipos"
 }
+
+resource "aws_api_gateway_method" "subir_foto" {
+  rest_api_id   = aws_api_gateway_rest_api.terrafleet.id
+  resource_id   = aws_api_gateway_resource.equipo_foto.id
+  http_method   = "POST"
+  authorization = "NONE"
+
+  request_parameters = {
+    "method.request.path.id" = true
+  }
+}
+
+resource "aws_api_gateway_integration" "subir_foto" {
+  rest_api_id = aws_api_gateway_rest_api.terrafleet.id
+  resource_id = aws_api_gateway_resource.equipo_foto.id
+  http_method = aws_api_gateway_method.subir_foto.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.subir_foto.invoke_arn
+}
+
+resource "aws_lambda_permission" "subir_foto" {
+  statement_id  = "AllowAPIGatewaySubirFoto"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.subir_foto.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.terrafleet.execution_arn}/dev/POST/equipos/*/foto"
+}
