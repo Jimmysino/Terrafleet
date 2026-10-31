@@ -1,2 +1,5 @@
 #directorios locales de terraform
 **/.terraform/
+
+# Configuración local del backend
+backend.hcl
