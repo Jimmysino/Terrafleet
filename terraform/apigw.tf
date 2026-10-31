@@ -98,3 +98,29 @@ resource "aws_lambda_permission" "ver_disponibilidad" {
 
   source_arn = "${aws_api_gateway_rest_api.terrafleet.execution_arn}/dev/GET/disponibilidad/*"
 }
+
+resource "aws_api_gateway_method" "publicar_equipo" {
+  rest_api_id   = aws_api_gateway_rest_api.terrafleet.id
+  resource_id   = aws_api_gateway_resource.equipos.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "publicar_equipo" {
+  rest_api_id = aws_api_gateway_rest_api.terrafleet.id
+  resource_id = aws_api_gateway_resource.equipos.id
+  http_method = aws_api_gateway_method.publicar_equipo.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.publicar_equipo.invoke_arn
+}
+
+resource "aws_lambda_permission" "publicar_equipo" {
+  statement_id  = "AllowAPIGatewayPublicarEquipo"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.publicar_equipo.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.terrafleet.execution_arn}/dev/POST/equipos"
+}
