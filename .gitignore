@@ -3,3 +3,6 @@
 
 # Configuración local del backend
 backend.hcl
+
+# Paquete generado para las Lambdas
+terraform/lambda.zip
