@@ -180,3 +180,47 @@ resource "aws_lambda_permission" "crear_reserva" {
 
   source_arn = "${aws_api_gateway_rest_api.terrafleet.execution_arn}/dev/POST/reservas"
 }
+
+resource "aws_api_gateway_deployment" "terrafleet" {
+  rest_api_id = aws_api_gateway_rest_api.terrafleet.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_rest_api.terrafleet,
+      aws_api_gateway_resource.equipos,
+      aws_api_gateway_resource.equipo_id,
+      aws_api_gateway_resource.equipo_foto,
+      aws_api_gateway_resource.disponibilidad,
+      aws_api_gateway_resource.disponibilidad_id,
+      aws_api_gateway_resource.reservas,
+      aws_api_gateway_method.buscar_equipos,
+      aws_api_gateway_method.ver_disponibilidad,
+      aws_api_gateway_method.publicar_equipo,
+      aws_api_gateway_method.subir_foto,
+      aws_api_gateway_method.crear_reserva,
+      aws_api_gateway_integration.buscar_equipos,
+      aws_api_gateway_integration.ver_disponibilidad,
+      aws_api_gateway_integration.publicar_equipo,
+      aws_api_gateway_integration.subir_foto,
+      aws_api_gateway_integration.crear_reserva
+    ]))
+  }
+
+  depends_on = [
+    aws_lambda_permission.buscar_equipos,
+    aws_lambda_permission.ver_disponibilidad,
+    aws_lambda_permission.publicar_equipo,
+    aws_lambda_permission.subir_foto,
+    aws_lambda_permission.crear_reserva
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "dev" {
+  rest_api_id   = aws_api_gateway_rest_api.terrafleet.id
+  deployment_id = aws_api_gateway_deployment.terrafleet.id
+  stage_name    = "dev"
+}
