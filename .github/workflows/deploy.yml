@@ -26,5 +26,7 @@ jobs:
             -backend-config="use_lockfile=true"
       - name: Terraform Validate
         run: terraform -chdir=terraform validate
+      - name: Unlock state
+        run: terraform -chdir=terraform force-unlock -force d118f9ee-960b-be99-a183-c4535eaa1e97
       - name: Terraform Apply
         run: terraform -chdir=terraform apply -auto-approve
