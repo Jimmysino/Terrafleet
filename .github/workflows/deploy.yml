@@ -26,14 +26,5 @@ jobs:
             -backend-config="use_lockfile=true"
       - name: Terraform Validate
         run: terraform -chdir=terraform validate
-      - name: Terraform Plan
-        run: terraform -chdir=terraform plan -out=tfplan
-      - name: Import existing Lambdas
-        run: |
-          terraform -chdir=terraform import aws_lambda_function.buscar_equipos lab09-buscar-equipos || true
-          terraform -chdir=terraform import aws_lambda_function.ver_disponibilidad lab09-ver-disponibilidad || true
-          terraform -chdir=terraform import aws_lambda_function.publicar_equipo lab09-publicar-equipo || true
-          terraform -chdir=terraform import aws_lambda_function.subir_foto lab09-subir-foto || true
-          terraform -chdir=terraform import aws_lambda_function.crear_reserva lab09-crear-reserva || true
       - name: Terraform Apply
-        run: terraform -chdir=terraform apply -auto-approve tfplan
+        run: terraform -chdir=terraform apply -auto-approve
